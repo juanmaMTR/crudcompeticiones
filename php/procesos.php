@@ -4,6 +4,9 @@
       include_once 'operacionesdb.php';
       $this->conexion = new OperacionesDB();
     }
+
+//=========== COMPETICIONES ====================================================
+
     function listarCompeticiones(){
      $sql = 'select * from competicion';
      $resultado = $this->conexion->consultar($sql);
@@ -41,7 +44,7 @@
         return $this->error($errno);
       }
       //$this->conexion->cerrarConexion();
-      header('Location: index.php');
+      header('Location: vistas/equipos.php?nombreCompeticion='.$datosCompeticion['nombreCompeticion']);
     }
     function modificarCompeticion($datosCompeticion){
       $sql = 'update competicion set nombreCompeticion="'.$datosCompeticion['nombreCompeticion'].'", descripcion="'.$datosCompeticion['descripcion'].'" where idCompeticion='.$datosCompeticion['idCompeticion'];
@@ -62,6 +65,35 @@
       }
       //$this->conexion->cerrarConexion();
       header('Location: index.php');
+    }
+
+//=========== EQUIPOS ==========================================================
+    function anadirEquipo($datosEquipo){
+      $sql = 'insert into equipos(puntos, idCompeticion) values ('.$datosEquipo['puntos'].','.$this->recuperarIdCompeticion($_POST['nombreCompeticion'])['idCompeticion'].')';
+      $resultado = $this->conexion->consultar($sql);
+      print_r($_POST);
+      $sql = 'insert into alumno_equipo_competicion values ';
+      foreach ($datosEquipo['jugador[]'] as $jugador) {
+        $sql.'('.$this->recuperarIdAlumno($jugador)['idAlumno'].', '.$resultado->insert_id.', '.$this->recuperarIdCompeticion($_POST['nombreCompeticion'])['idCompeticion'].')';
+        echo $sql;
+      }
+      $resultado = $this->conexion->consultar($sql);
+      $errno = $this->conexion->codigoError();
+      if($errno){
+        return $this->error($errno);
+      }
+      //$this->conexion->cerrarConexion();
+      header('Location: ../index.php');
+    }
+    function recuperarIdCompeticion($datosCompeticion){
+      $sql = 'select idCompeticion from competicion where nombreCompeticion="'.$datosCompeticion.'"';
+      $resultado = $this->conexion->consultar($sql);
+      return $this->conexion->extraerFila($resultado);
+    }
+    function recuperarIdAlumno($datosJugadores){
+      $sql = 'select idAlumno from alumno where nombre="'.$datosJugadores.'"';
+      $resultado = $this->conexion->consultar($sql);
+      return $this->conexion->extraerFila($resultado);
     }
     function error($errno){
       switch ($errno) {
