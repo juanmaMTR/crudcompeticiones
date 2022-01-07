@@ -11,6 +11,9 @@
     function extraerFila($resultado){
       return mysqli_fetch_assoc($resultado);
     }
+    function recuperarUltimoId(){
+      return $this->conexion->insert_id;
+    }
     function codigoError(){
       return $this->conexion->errno;
     }

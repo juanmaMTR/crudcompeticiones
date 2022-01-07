@@ -71,12 +71,12 @@
     function anadirEquipo($datosEquipo){
       $sql = 'insert into equipos(puntos, idCompeticion) values ('.$datosEquipo['puntos'].','.$this->recuperarIdCompeticion($_POST['nombreCompeticion'])['idCompeticion'].')';
       $resultado = $this->conexion->consultar($sql);
-      print_r($_POST);
       $sql = 'insert into alumno_equipo_competicion values ';
-      foreach ($datosEquipo['jugador[]'] as $jugador) {
-        $sql.'('.$this->recuperarIdAlumno($jugador)['idAlumno'].', '.$resultado->insert_id.', '.$this->recuperarIdCompeticion($_POST['nombreCompeticion'])['idCompeticion'].')';
-        echo $sql;
+      foreach ($datosEquipo['jugador'] as $jugador) {
+        $sql.='('.$this->recuperarIdAlumno($jugador)['idAlumno'].', '.$this->conexion->recuperarUltimoId().', '.$this->recuperarIdCompeticion($_POST['nombreCompeticion'])['idCompeticion'].'),';
       }
+      $sql = substr($sql, 0, -1);
+      echo $sql;
       $resultado = $this->conexion->consultar($sql);
       $errno = $this->conexion->codigoError();
       if($errno){
