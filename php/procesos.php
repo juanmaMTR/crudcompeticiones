@@ -95,6 +95,41 @@
       $resultado = $this->conexion->consultar($sql);
       return $this->conexion->extraerFila($resultado);
     }
+    function listadoEquipo(){
+      $sql= 'select * from equipos';
+      $resultado = $this->conexion->consultar($sql);
+      $errno = $this->conexion->codigoError();
+      if($errno){
+        return $this->error($errno);
+      }
+      echo '<table>
+     <tr>
+       <th>NOMBRE EQUIPO</th>
+       <th>PUNTOS</th>
+       <th>IDCOMPETICION</th>
+     </tr>';
+     for($i=0;$i<$resultado->num_rows;$i++){
+      $fila = $this->conexion->extraerFila($resultado);
+      echo '<tr>
+        <td>'.$fila['nombreEquipo'].'</td>
+        <td>'.$fila['puntos'].'</td>
+        <td>'.$fila['idCompeticion'].'</td>
+        <td><a href="modificar.php?idCompeticion='.$fila['idCompeticion'].'">Modificar</a></td>
+        <td><a href="listadoequipos.php?borrar='.$fila['idEquipo'].'">Borrar</a></td>
+      </tr>';
+      }
+      echo '</table>';
+    }
+    function borrarEquipo($idEquipo){
+      $sql = 'delete from equipos where idEquipo='.$idEquipo;
+      $resultado = $this->conexion->consultar($sql);
+      $errno = $this->conexion->codigoError();
+      if($errno){
+        return $this->error($errno);
+      }
+      //$this->conexion->cerrarConexion();
+      header('Location: listadoequipos.php');
+    }
     function error($errno){
       switch ($errno) {
         default:
